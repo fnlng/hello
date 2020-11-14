@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .container{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .log-in{
+            background-color: #fff;
+            border-radius: 7px 7px;
+            width: 340px;height: 410px;
+            border-color: gray;
+            
+        }
+        .markout{
+            width: 330px;height: 50px;
+        }
+        .photo{
+            text-align: center;
+        }
+        .inputtext{
+            width: 330px;height: 30px;
+            border-radius: 5px 5px;
+            border-color: gray;
+            border-radius: 3px 3px;
+        }
+        .login-button{
+            width: 330px;height: 30px;
+            
+        }
+        .btn{
+            width: 330px;height: 30px;
+            background-color: blue;
+            color: white;
+            border: 0;
+            border-radius: 5px 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="log-in">
+            <fieldset class="log-in">
+                <div class="photo">
+                    <img src="photo.png" alt="登录">
+                </div>
+                
+                <div class="markout">
+                    <input type="text" name="first" class="inputtext" placeholder="请输入学号" required>
+                </div>
+                <div class="markout">
+                    <input type="password" name="second" class="inputtext" placeholder="请输入密码" required>
+                </div>
+                <div class="login-button">
+                    <input type="button" value="Login" class="btn" onclick="login()">
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <script>
+        function login(){
+            xhr = new XMLHttpRequest();
+            xhr.open('GET','https://os.ncuos.com/api/user/token');
+            xhr.send();//发送账号密码
+            xhr.onreadystatechange = function(){
+                if(xhr.readyState == 4 && xhr.status == 200){
+                    alert(xhr.response);
+                }
+                else{
+                    alert('error');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
