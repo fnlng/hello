@@ -1,10 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
+        body{
+            background-color: silver;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
         .container{
             display: flex;
             justify-content: center;
@@ -13,32 +19,74 @@
         .log-in{
             background-color: #fff;
             border-radius: 7px 7px;
-            width: 340px;height: 410px;
-            border-color: gray;
+            width: 400px;height: 460px;
+            border: 0;
             
         }
         .markout{
-            width: 330px;height: 50px;
+            width: 340px;height: 55px;
+            margin: 7px;
         }
         .photo{
             text-align: center;
         }
         .inputtext{
-            width: 330px;height: 30px;
+            width: 300px;height: 45px;
             border-radius: 5px 5px;
             border-color: gray;
-            border-radius: 3px 3px;
+            border: 0px;
+            box-shadow: 0 0 2px 0 gray;
+            padding: 0 2px 0 34px;
+        }
+        input:focus{
+            box-shadow: 0 0 9px 0 skyblue;
         }
         .login-button{
-            width: 330px;height: 30px;
+            width: 330px;height: 45px;
             
         }
         .btn{
-            width: 330px;height: 30px;
+            width: 330px;height: 45px;
             background-color: blue;
             color: white;
             border: 0;
             border-radius: 5px 5px;
+            margin-top: 7px;
+        }
+        #hidden{
+            width: 330px;height: 300px;
+            border-radius: 5px 5px;
+            z-index: 7;
+            background-color: white;
+            position: fixed;
+            bottom: 140px;
+            padding: 30px;
+        }
+        #hiddenBtn{
+            display: block;
+            float: right;
+            width: 50px;height: 30px;
+            background-color: blue;
+            color: white;
+            text-align: center;
+            border-radius: 5px 5px;
+        }
+        .flexbox{
+            display: flex;
+            flex-flow: column;
+            align-items: center;
+            justify-content: center;
+            height: 380px;
+        }
+        .pic{
+            width: 27px;
+            height: 27px;
+            position: absolute;
+            margin: 5px 0 0 5px;
+        }
+        .bottom{
+            position: relative;
+            top: 200px;
         }
     </style>
 </head>
@@ -46,35 +94,74 @@
     <div class="container">
         <div class="log-in">
             <fieldset class="log-in">
+            <div class="flexbox">
                 <div class="photo">
                     <img src="photo.png" alt="登录">
                 </div>
-                
+            
                 <div class="markout">
-                    <input type="text" name="first" class="inputtext" placeholder="请输入学号" required>
+                    <img src="user.png" class="pic">
+                    <input type="text" id="name" class="inputtext" placeholder="请输入学号" required>
                 </div>
                 <div class="markout">
-                    <input type="password" name="second" class="inputtext" placeholder="请输入密码" required>
+                    <img src="lock.png" class="pic">
+                    <input type="password" id="password" class="inputtext" placeholder="请输入密码" required>
                 </div>
                 <div class="login-button">
                     <input type="button" value="Login" class="btn" onclick="login()">
+                </div>
+            </div>
+                <div id="hidden" hidden>
+                    <div id="xh"></div>
+                    <div id="xm"></div>
+                    <div id="xb mc"></div>
+                    <div id="csd mc"></div>
+                    <div id="yddh"></div>
+                    <div class="bottom">
+                        <button id="hiddenBtn" onclick="hidden()">OK</button>
+                    </div>  
                 </div>
             </fieldset>
         </div>
     </div>
     <script>
         function login(){
-            xhr = new XMLHttpRequest();
-            xhr.open('GET','https://os.ncuos.com/api/user/token');
-            xhr.send();//发送账号密码
-            xhr.onreadystatechange = function(){
-                if(xhr.readyState == 4 && xhr.status == 200){
-                    alert(xhr.response);
+            var name = document.getElementById('name');
+            var password = document.getElementById('password');
+            var temp = {};
+            temp.username=name.value;
+            temp.password=password.value;
+            console.log(temp);
+            let xhr = new XMLHttpRequest();
+            xhr.open('POST',"https://os.ncuos.com/api/user/token",true);
+            xhr.setRequestHeader("Content-type", "application/json");
+            xhr.send(JSON.stringify(temp));  //发送账号密码
+            xhr.onload = () => {
+                var rep = JSON.parse(xhr.response).token;
+                let xr = new XMLHttpRequest();
+                xr.open('GET','https://os.ncuos.com/api/user/profile/basic');
+                xr.setRequestHeader("authorization", "passport " + rep);
+                xr.send(JSON.stringify(temp));
+                
+                xr.onload = () => {
+                    var rep2 = JSON.parse(xr.response);
+                    document.getElementById("xh").innerHTML = "姓名：" + rep2.base_info.xm;
+                    document.getElementById("xm").innerHTML = "学号：" + temp.username;
+                    document.getElementById("xb mc").innerHTML = "性别：" + rep2.base_info.xb.mc;
+                    document.getElementById("csd mc").innerHTML = "地址：" + rep2.base_info.csd.mc;
+                    document.getElementById("yddh").innerHTML = "手机号：" + rep2.base_info.yddh;
+                    document.getElementById("hidden").removeAttribute("hidden");
                 }
-                else{
-                    alert('error');
+                if(xr.status != 200) {
+                    alert("你网炸了");
                 }
             }
+            if(xhr.status != 200){
+                alert("你网炸了");
+            }
+        }
+        function hidden(){
+            document.getElementById("hidden").hidden = true;
         }
     </script>
 </body>
